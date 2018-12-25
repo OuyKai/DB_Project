@@ -23,15 +23,15 @@ def manager_work(sock, temp):
         command = get_command(sock)
         para = get_para(sock)
         if command == config.Dictionary['login']:
-            restaurant.Login(sock, para, temp)
+            temp.Login(sock, para)
         elif command == config.Dictionary['employ']:
-            restaurant.Sign_up(sock, para, temp)
+            temp.Sign_up(sock, para)
         elif command == config.Dictionary['order']:
-            restaurant.Order(sock, para, temp)
+            temp.Order(sock, para)
         elif command == config.Dictionary['checkout']:
-            restaurant.checkout(sock, para, temp)
+            temp.checkout(sock, para)
         elif command == config.Dictionary['payoff']:
-            restaurant.Payoff(sock, para, temp)
+            temp.Payoff(sock, para)
         elif command == config.Dictionary['quit']:
             return
         else: print("Error command : " + str(command))
@@ -44,7 +44,7 @@ def manager(sock, address):
         if role == "customer":
             if 0 not in config.table:
                 print("No seat, Please wait")
-            while True:
+            while True:         # 等到有桌子的时候才让他进来
                 time.sleep(1)
                 if 0 in config.table:
                     break
@@ -60,16 +60,21 @@ def manager(sock, address):
             config.mutex.acquire()
             config.waiter_list.append(0)
             config.mutex.release()
+
         elif role == "cooker":
             config.mutex.acquire()
             config.cooker_list.append(0)
             config.mutex.release()
+
         manager_work(sock, temp)
+
+        if temp.number != -1:  # 客人走后餐桌置为空
+            config.mutex.acquire()
+            config.table[temp.number] = 1
+            config.mutex.release()
     except:
         print('连接终止: source: %s:%s' % address)
         print('==================================================')
-    if temp.number != -1:
-        config.mutex.acquire()
-        config.table[temp.number] = 1
-        config.mutex.release()
+
+    sock.close()
     return

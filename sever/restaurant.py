@@ -13,13 +13,18 @@ class Restaurant():
         data = para.strip().split()
         username = data[0]
         password = data[1]
-        self.con = pymysql.connect(
-            host = config.ip_address,
-            port = config.ip_port,
-            user = username,
-            password = password,
-            db = config.db_name
-        )
+        try:
+            con = pymysql.connect(
+                host=config.ip_address,
+                port=config.ip_port,
+                user=username,
+                password=password,
+                db=config.db_name
+            )
+            self.cur = con.cursor()
+        except pymysql.Error as e:
+            sock.send(config.Dictionary['no'].encode())
+            print("Error %d: %s"%(e.args[0],e.args[1]))
         sock.send(config.Dictionary['yes'].encode())
         return
 
@@ -27,8 +32,15 @@ class Restaurant():
         data = para.strip.split()
         username = data[0]
         password = data[1]
-
-        sock.send(config.Dictionary['yes'].encode())
+        flag = False
+        try:
+            self.cur.callproc(config.sign_up, (username, password, flag))
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
+        if flag == True:
+            sock.send(config.Dictionary['yes'].encode())
+        else:
+            sock.send(config.Dictionary['no'].encode())
         return
 
     def Reception(self, sock, para):

@@ -27,16 +27,12 @@ def main_cycle():
     while True:
         role = input("Please input who are you >>> ")
         if role == 'boss':
-            sock.send("boss".encode())
             boss(sock)
         elif role == 'cooker':
-            sock.send("cooker".encode())
             cooker(sock)
         elif role == 'waiter':
-            sock.send("waiter".encode())
             waiter(sock)
         elif role == 'customer':
-            sock.send("customer".encode())
             customer(sock )
         elif role == 'help':
             help()

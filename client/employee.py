@@ -120,10 +120,10 @@ def boss_work(sock, boss):
 
 def boss(sock):
     os.system('cls')
+    sock.send("boss".encode())
     temp = Employee(Job.boss)
 
     print("Please login first(input back")
-
     while True:
         username = input("username(or back) >>> ")
         if username == "back":
@@ -166,6 +166,7 @@ def cooker(sock):
     :return:
     '''
     os.system('cls')
+    sock.send("cooker".encode())
     temp = Employee(Job.cooker)
 
     print("Please login first(input back")
@@ -215,6 +216,7 @@ def waiter(sock):
     :return:
     '''
     os.system('cls')
+    sock.send("waiter".encode())
     temp = Employee(Job.waiter)
 
     print("Please login first(input back")

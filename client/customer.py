@@ -65,8 +65,8 @@ class Customer():
 
 def customer(sock):
     os.system('cls')
+    sock.send("customer".encode())
     temp = Customer()
-
     temp.table = sock.recv(4)
 
     print('Welcome to use the client(input help for help)')

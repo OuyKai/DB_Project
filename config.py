@@ -23,6 +23,7 @@ ip_address = '127.0.0.1'
 ip_port = 10086
 db_name = 'MY_RESTAURANT'
 listen_limit = 10
+sign_up = "sign_up"
 
 table = [0] * listen_limit
 
