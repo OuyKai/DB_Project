@@ -3,7 +3,7 @@ import config
 import os
 
 def get_command(sock):
-    command = sock.recv(4)
+    command = sock.recv(1024).decode()
     return command
 
 def get_para(sock):
@@ -27,6 +27,8 @@ class Job(Enum):
 class Employee():
     def __init__(self, job):
         self.job = job
+        self.table = []
+        self.menu = []
         return
 
     def login(self, sock, username, password):
@@ -40,8 +42,8 @@ class Employee():
 
 
     def sign_up(self, sock):
-        username = input("Please input your username >>> ")
-        password = input("Please input your password >>> ")
+        username = input("Please input username >>> ")
+        password = input("Please input password >>> ")
         sock.send(config.Dictionary['sign_up'])
         sock.send(username + ' ' + password)
         flag = sock.recv(4)

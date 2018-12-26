@@ -32,9 +32,9 @@ class Customer():
         for food in self.order:
             menu += (food + " ")
         sock.send(menu)
-        flag = sock.recv(4)
+        flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
-            self.cost = sock.recv(1024)
+            self.cost = sock.recv(1024).decode()
             self.Eat()
             return True
         return False
@@ -56,18 +56,16 @@ class Customer():
         '''
         sock.send(config.Dictionary['checkout'])
         sock.send(str(self.cost))
-        flag = sock.recv(4)
+        flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
         return False
-
-
 
 def customer(sock):
     os.system('cls')
     sock.send("customer".encode())
     temp = Customer()
-    temp.table = sock.recv(4)
+    temp.table = sock.recv(1024).decode()
 
     print('Welcome to use the client(input help for help)')
     while True:

@@ -3,10 +3,9 @@ import pymysql
 
 class Restaurant():
     def __init__(self):
-        self.limit_of_table = 0
-        self.open_time = 0
-        self.close_time = 0
-        self.number = -1
+        self.number_of_table = -1
+        self.number_of_waiter = -1
+        self.number_of_cooker = -1
         return
 
     def Login(self, sock, para):
@@ -53,22 +52,24 @@ class Restaurant():
         return
 
     def Order(self, sock, para):
+        menu = para.strip.split()
+
         sock.send(config.Dictionary['yes'].encode())
         return
 
     def checkout(self, sock, para):
+        money = int(para)
+
         sock.send(config.Dictionary['yes'].encode())
         return
 
-
-    def Employ(self, sock, para):
-        sock.send(config.Dictionary['yes'].encode())
-        return
 
     def Unemploy(self, sock, para):
+        username = para
         sock.send(config.Dictionary['yes'].encode())
         return
 
     def Payoff(self, sock, para):
+
         sock.send(config.Dictionary['yes'].encode())
         return
