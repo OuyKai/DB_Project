@@ -20,9 +20,14 @@ def get_para(sock):
     para = msg.strip().split()
     return para
 
+class Job(Enum):
+    boss = "boss"
+    waiter = "waiter"
+    cooker = "cooker"
 
 class Employee():
-    def __init__(self):
+    def __init__(self, job):
+        self.job = job
         self.time = random.randint(1, 20)
         return
 
