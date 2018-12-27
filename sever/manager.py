@@ -1,7 +1,6 @@
 import restaurant
 import config
 import time
-import random
 
 def get_command(sock):
     command = sock.recv(1024).decode()
@@ -26,13 +25,24 @@ def manager_work(sock, temp):
         if command == config.Dictionary['login']:
             temp.Login(sock, para)
         elif command == config.Dictionary['employ']:
-            temp.Sign_up(sock, para)
+            temp.Employ(sock, para)
         elif command == config.Dictionary['order']:
             temp.Order(sock, para)
         elif command == config.Dictionary['checkout']:
-            temp.checkout(sock, para)
+            temp.Checkout(sock)
         elif command == config.Dictionary['payoff']:
             temp.Payoff(sock, para)
+        elif command == config.Dictionary['working']:
+            if temp.role == "cooker":
+                config.mutex.acquire()
+                config.cooker_list.append(temp)
+                config.mutex.release()
+                temp.Cook(sock)
+            else:
+                config.mutex.acquire()
+                config.waiter_list.append(temp)
+                config.mutex.release()
+                temp.Serve(sock)
         elif command == config.Dictionary['quit']:
             return
         else: print("Error command : " + str(command))
@@ -50,13 +60,12 @@ def manager(sock, address):
                 if 0 in config.table and len(config.cooker_list) != 0 and len(config.waiter_list) != 0:
                     break
 
-            size_of_waiter = len(config.waiter_list)
-            temp.number_of_waiter = random.randint(0, size_of_waiter - 1)
+            temp.role = "customer"
+            temp.start_time = time.time()
             temp.number_of_table = config.table.index(0)
 
             config.mutex.acquire()
             config.table[temp.number_of_table] = 1
-            config.waiter_list[temp.number_of_waiter].table.append(temp.number_of_table)
             config.mutex.release()
 
             sock.send(temp.number_of_table)
@@ -65,29 +74,24 @@ def manager(sock, address):
 
             config.mutex.acquire()
             config.table[temp.number_of_table] = 0
-            config.waiter_list[temp.number_of_waiter].table.remove(temp.number_of_table)
             config.mutex.release()
 
         elif role == "waiter":
-            config.mutex.acquire()
-            config.waiter_list.append(temp)
-            config.mutex.release()
-
+            temp.role = "waiter"
             manager_work(sock, temp)
 
             config.mutex.acquire()
-            config.waiter_list.remove(temp)
+            if temp in config.waiter_list:
+                config.waiter_list.remove(temp)
             config.mutex.release()
 
         elif role == "cooker":
-            config.mutex.acquire()
-            config.cooker_list.append(temp)
-            config.mutex.release()
-
+            temp.role = "cooker"
             manager_work(sock, temp)
 
             config.mutex.acquire()
-            config.cooker_list.remove(temp)
+            if temp in config.cooker_list:
+                config.cooker_list.remove(temp)
             config.mutex.release()
 
     except:

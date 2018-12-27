@@ -1,6 +1,8 @@
 from enum import Enum
 import config
 import os
+import random
+import time
 
 def get_command(sock):
     command = sock.recv(1024).decode()
@@ -22,31 +24,29 @@ class Job(Enum):
     boss = "boss"
     waiter = "waiter"
     cooker = "cooker"
-    reception = "reception"
 
 class Employee():
     def __init__(self, job):
         self.job = job
-        self.table = []
-        self.menu = []
+        self.time = random.randint(1, 20)
         return
 
     def login(self, sock, username, password):
         sock.send(config.Dictionary['login'])
         sock.send(username + ' ' + password)
-        flag = sock.recv(4)
+        flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
         else:
             return False
 
 
-    def sign_up(self, sock):
+    def Employ(self, sock):
         username = input("Please input username >>> ")
         password = input("Please input password >>> ")
-        sock.send(config.Dictionary['sign_up'])
-        sock.send(username + ' ' + password)
-        flag = sock.recv(4)
+        sock.send(config.Dictionary['sign_up'].encode())
+        sock.send((username + ' ' + password).encode())
+        flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
         else:
@@ -55,70 +55,34 @@ class Employee():
 
     def fire(self, sock):
         username = input("Please input the username you want to fire >>> ")
-        sock.send(config.Dictionary['sign_up'])
-        sock.send(username)
-        flag = sock.recv(4)
+        sock.send(config.Dictionary['sign_up'].encode())
+        sock.send(username.encode())
+        flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
         else:
             return False
 
-    def Reception(self, sock):
-        '''
-        if there have any seat in restaurant
-        it is called by restaurant
-        :return:
-        '''
-        return
-
-    def Refused(self, sock):
-        '''
-        if there have not any seat in restaurant
-        it is called by restaurant
-
-        :return:
-        '''
-        return
-
-    def Order(self, sock):
-        '''
-        after customer order
-        it is called by restaurant
-
-        :return:
-        '''
-        return
-
-    def Cook(self, sock):
+    def Cook(self, para):
         '''
         cooker cooking
 
         :return:
         '''
+        time.sleep(self.time)
+        print("cook finish")
+        print(para)
         return
 
-    def Leave(self, sock):
-        '''
-        resignation
-
-        :return:
-        '''
+    def Serve(self, para):
+        time.sleep(self.time)
+        print("sever dish")
+        print(para)
         return
 
-    def Checkout(self, sock):
-        '''
-        reception checkout
-
-        :return:
-        '''
+    def Payoff(self, sock):
         return
 
-    def Acount(self, sock):
-        return
-
-
-def boss_work(sock, boss):
-        return
 
 def boss(sock):
     os.system('cls')
@@ -136,9 +100,9 @@ def boss(sock):
             while True:
                 operation = input("Please input what you want >>> ")
                 if operation == 'payoff':
-                    print()
+                    temp.Payoff(sock)
                 elif operation == 'employ':
-                    temp.sign_up(sock)
+                    temp.Employ(sock)
                 elif operation == 'help':
                     print('payoff: check account of restaurant.')
                     print('back: back to last window.')
@@ -156,6 +120,7 @@ def cooker_work(sock, cooker):
         para = get_para(sock)
         if command == config.Dictionary['cook']:
             cooker.Cook(para)
+            sock.send(config.Dictionary['yes'].encode())
         else:
             print("error command: " + command)
 
@@ -198,12 +163,9 @@ def waiter_work(sock, waiter):
     while True:
         command = get_command(sock)
         para = get_para(sock)
-        if command == config.Dictionary['start']:
-            waiter.Reception(para)
-        elif command == config.Dictionary['order']:
-            waiter.Order(para)
-        elif command == config.Dictionary['checkout']:
-            waiter.Checkout(para)
+        if command == config.Dictionary['serve']:
+            waiter.serve(para)
+            sock.send(config.Dictionary['yes'].encode())
         else:
             print("error command: " + command)
 

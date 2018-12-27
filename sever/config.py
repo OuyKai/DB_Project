@@ -22,10 +22,14 @@ Dictionary = {
 ip_address = '127.0.0.1'
 ip_port = 10086
 db_name = 'MY_RESTAURANT'
-listen_limit = 10
-sign_up = "sign_up"
 
+listen_limit = 10
 table = [0] * listen_limit
 
-waiter_list = []
-cooker_list = []
+waiter_salary = []
+cooker_salary = []
+
+sign_up = "sign_up"
+
+serve_dish_list = []
+cook_food_list = []

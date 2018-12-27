@@ -1,19 +1,14 @@
-from enum import Enum
 import os
 import config
 import time
-
-class State(Enum):
-    waiting = "waiting"
-    consuming = "consuming"
+import random
 
 class Customer():
     def __init__(self):
         self.table = 0
         self.order = []
         self.cost = 0
-        self.time = 0
-        self.state = State.waiting
+        self.time = random.randint(1, 20)
         return
 
     def Order(self, sock):
@@ -23,19 +18,21 @@ class Customer():
 
         :return:
         '''
+        order = []
         food_name = input("Please input what your want >>> ")
-        self.order.append(food_name)
+        order.append(food_name)
         while food_name != "over":
             food_name = input("Please input what your want >>> ")
-            self.order.append(food_name)
-        menu = ""
+            order.append(food_name)
+        menu = str(self.table) + " "
         for food in self.order:
             menu += (food + " ")
-        sock.send(menu)
+        sock.send(menu.encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             self.cost = sock.recv(1024).decode()
-            self.Eat()
+            for food in order:
+                self.order.append(food)
             return True
         return False
 
@@ -45,7 +42,7 @@ class Customer():
 
         :return:
         '''
-        time.sleep(10)
+        time.sleep(self.time * len(self.order))
         return
 
     def Checkout(self, sock):
@@ -55,7 +52,6 @@ class Customer():
         :return:
         '''
         sock.send(config.Dictionary['checkout'])
-        sock.send(str(self.cost))
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
@@ -71,9 +67,16 @@ def customer(sock):
     while True:
         operation = input("Please input what you want >>> ")
         if operation == 'order':
-            temp.Order(sock)
+            if temp.Order(sock):
+                print("Order successfully !")
+                # temp.Eat()
+            else:
+                print("Failed")
         elif operation == 'checkout':
-            temp.Checkout(sock)
+            if temp.Checkout(sock):
+                print("checkout successfully !")
+            else:
+                print("Error")
         elif operation == 'help':
             print('order: order what food you want.')
             print('checkout: checkout when you want to leave.')
