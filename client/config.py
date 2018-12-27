@@ -14,3 +14,6 @@ Dictionary = {
     'no': '1110',
     'quit': '1111', # 退出
 }
+
+ip_address = '172.18.34.38'
+ip_port = 10086

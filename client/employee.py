@@ -32,8 +32,8 @@ class Employee():
         return
 
     def login(self, sock, username, password):
-        sock.send(config.Dictionary['login'])
-        sock.send(username + ' ' + password)
+        sock.send(config.Dictionary['login'].encode())
+        sock.send((username + ' ' + password).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
@@ -91,7 +91,7 @@ def boss(sock):
     sock.send("boss".encode())
     temp = Employee(Job.boss)
 
-    print("Please login first(input back")
+    print("Please login first(input back to return)")
     while True:
         username = input("username(or back) >>> ")
         if username == "back":

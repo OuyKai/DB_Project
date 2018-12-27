@@ -16,13 +16,15 @@ def help():
 
 
 def main_cycle():
-    os.system('cls')
+    #os.system('cls')
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
+        print(config.ip_address)
         sock.connect((config.ip_address, config.ip_port))
     except:
         print("sever is busy, please connect later")
+        return
     print('Welcome to use the client(input help for help)')
     while True:
         role = input("Please input who are you >>> ")
