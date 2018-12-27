@@ -6,6 +6,7 @@ import time
 
 def get_command(sock):
     command = sock.recv(1024).decode()
+    print("接收指令为 >> " + str(command))
     return command
 
 def get_para(sock):
@@ -18,6 +19,7 @@ def get_para(sock):
         else:
             msg += data
     para = msg.strip().split()
+    print("接收参数为 >> " + str(para))
     return para
 
 class Job(Enum):
@@ -31,13 +33,15 @@ class Employee():
         self.time = random.randint(1, 20)
         return
 
-    def login(self, sock, username, password):
+    def Login(self, sock, username, password):
         sock.send(config.Dictionary['login'].encode())
         sock.send((username + ' ' + password).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
+            print("Login successfully !")
             return True
         else:
+            print("Login failed !")
             return False
 
 
@@ -45,22 +49,26 @@ class Employee():
         username = input("Please input username >>> ")
         password = input("Please input password >>> ")
         sock.send(config.Dictionary['sign_up'].encode())
-        sock.send((username + ' ' + password).encode())
+        sock.send((username + ' ' + password + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
+            print("Employ successfully !")
             return True
         else:
+            print("Employ failed !")
             return False
 
 
-    def fire(self, sock):
+    def Fire(self, sock):
         username = input("Please input the username you want to fire >>> ")
         sock.send(config.Dictionary['sign_up'].encode())
         sock.send(username.encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
+            print("Fire successfully !")
             return True
         else:
+            print("Fire failed !")
             return False
 
     def Cook(self, sock, para):
@@ -97,7 +105,7 @@ def boss(sock):
         if username == "back":
             return
         password = input("password >>> ")
-        if temp.login(sock, username, password):
+        if temp.Login(sock, username, password):
             print('Welcome to use the client(input help for help)')
             while True:
                 operation = input("Please input what you want >>> ")
@@ -137,14 +145,13 @@ def cooker(sock):
     sock.send("cooker".encode())
     temp = Employee(Job.cooker)
 
-    print("Please login first(input back")
-
+    print("Please login first(input back to return)")
     while True:
         username = input("username(or back) >>> ")
         if username == "back":
             return
         password = input("password >>> ")
-        if temp.login(sock, username, password):
+        if temp.Login(sock, username, password):
             print('Welcome to use the client(input help for help)')
             while True:
                 operation = input("Please input what you want >>> ")
@@ -184,14 +191,13 @@ def waiter(sock):
     sock.send("waiter".encode())
     temp = Employee(Job.waiter)
 
-    print("Please login first(input back")
-
+    print("Please login first(input back to return)")
     while True:
         username = input("username(or back) >>> ")
         if username == "back":
             return
         password = input("password >>> ")
-        if temp.login(sock, username, password):
+        if temp.Login(sock, username, password):
             print('Welcome to use the client(input help for help)')
             while True:
                 operation = input("Please input what you want >>> ")

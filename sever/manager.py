@@ -4,6 +4,7 @@ import time
 
 def get_command(sock):
     command = sock.recv(1024).decode()
+    print("接收指令为 >> " + str(command))
     return command
 
 def get_para(sock):
@@ -16,6 +17,7 @@ def get_para(sock):
         else:
             msg += data.decode()
     para = msg.strip().split()
+    print("接收参数为 >> " + str(para))
     return para
 
 def manager_work(sock, temp):
@@ -92,5 +94,10 @@ def manager(sock, address):
         if temp in config.cooker_list:
             config.cooker_list.remove(temp)
         config.mutex.release()
+
+    else:
+        temp.role = "boss"
+        manager_work(sock, temp)
+
     sock.close()
     return

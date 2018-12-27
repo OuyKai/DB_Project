@@ -16,11 +16,11 @@ def help():
 
 
 def main_cycle():
-    #os.system('cls')
+    os.system('cls')
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        print(config.ip_address)
+        # print(config.ip_address)
         sock.connect((config.ip_address, config.ip_port))
     except:
         print("sever is busy, please connect later")
