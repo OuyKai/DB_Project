@@ -63,7 +63,7 @@ class Employee():
         else:
             return False
 
-    def Cook(self, para):
+    def Cook(self, sock, para):
         '''
         cooker cooking
 
@@ -72,12 +72,14 @@ class Employee():
         time.sleep(self.time)
         print("cook finish")
         print(para)
+        sock.send(config.Dictionary['yes'].encode())
         return
 
-    def Serve(self, para):
+    def Serve(self, sock, para):
         time.sleep(self.time)
         print("sever dish")
         print(para)
+        sock.send(config.Dictionary['yes'].encode())
         return
 
     def Payoff(self, sock):
@@ -120,7 +122,6 @@ def cooker_work(sock, cooker):
         para = get_para(sock)
         if command == config.Dictionary['cook']:
             cooker.Cook(para)
-            sock.send(config.Dictionary['yes'].encode())
         else:
             print("error command: " + command)
 

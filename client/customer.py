@@ -27,6 +27,7 @@ class Customer():
         menu = str(self.table) + " "
         for food in self.order:
             menu += (food + " ")
+        sock.send(config.Dictionary['order'])
         sock.send(menu.encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
@@ -52,6 +53,7 @@ class Customer():
         :return:
         '''
         sock.send(config.Dictionary['checkout'])
+        sock.send(config.Dictionary['eof'])
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
