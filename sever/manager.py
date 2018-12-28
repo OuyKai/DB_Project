@@ -10,12 +10,12 @@ def get_command(sock):
 def get_para(sock):
     msg = ''
     while True:
-        data = sock.recv(1024)
-        if data[-4:].decode() == config.Dictionary['eof']:
-            msg += data[:-4].decode()
+        data = sock.recv(1024).decode()
+        if data[-4:] == config.Dictionary['eof']:
+            msg += data[:-4]
             break
         else:
-            msg += data.decode()
+            msg += data
     para = msg.strip().split()
     print("接收参数为 >> " + str(para))
     return para
@@ -30,6 +30,8 @@ def manager_work(sock, temp):
             temp.Employ(sock, para)
         elif command == config.Dictionary['order']:
             temp.Order(sock, para)
+        elif command == config.Dictionary['wait']:
+            temp.Wait(sock)
         elif command == config.Dictionary['checkout']:
             temp.Checkout(sock)
         elif command == config.Dictionary['payoff']:
@@ -56,6 +58,7 @@ def manager(sock, address):
     if role == "customer":
         if 0 not in config.table or len(config.waiter_list) == 0 or len(config.cooker_list) == 0:
             print("No seat or no employee, Please wait")
+            sock.send(config.Dictionary['no'].encode())
         while True:         # 等到有桌子有人的时候才让他进来
             time.sleep(1)
             if 0 in config.table and len(config.cooker_list) != 0 and len(config.waiter_list) != 0:
@@ -69,7 +72,7 @@ def manager(sock, address):
         config.table[temp.number_of_table] = 1
         config.mutex.release()
 
-        sock.send(temp.number_of_table)
+        sock.send(str(temp.number_of_table).encode())
 
         manager_work(sock, temp)
 

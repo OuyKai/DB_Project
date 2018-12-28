@@ -7,6 +7,7 @@ class Customer():
     def __init__(self):
         self.table = 0
         self.order = []
+        self.food = []
         self.cost = 0
         self.time = random.randint(1, 20)
         return
@@ -19,16 +20,15 @@ class Customer():
         :return:
         '''
         order = []
-        food_name = input("Please input what your want >>> ")
-        order.append(food_name)
+        food_name = input("Please input food name(input over to stop) >>> ")
         while food_name != "over":
-            food_name = input("Please input what your want >>> ")
             order.append(food_name)
+            food_name = input("Please input food name >>> ")
         menu = str(self.table) + " "
-        for food in self.order:
+        for food in order:
             menu += (food + " ")
-        sock.send(config.Dictionary['order'])
-        sock.send(menu.encode())
+        sock.send(config.Dictionary['order'].encode())
+        sock.send((menu + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             self.cost = sock.recv(1024).decode()
@@ -36,6 +36,17 @@ class Customer():
                 self.order.append(food)
             return True
         return False
+
+    def wait(self, sock):
+        sock.send(config.Dictionary['wait'].encode())
+        sock.send(config.Dictionary['eof'].encode())
+        while len(self.food) != len(self.order):
+            sock.send(config.Dictionary['no'].encode())
+            food = sock.recv(1024).decode()
+            print(food + " 已完成，请慢用")
+            self.food.append(food)
+        sock.send(config.Dictionary['yes'].encode())
+        return
 
     def Eat(self):
         '''
@@ -52,8 +63,8 @@ class Customer():
 
         :return:
         '''
-        sock.send(config.Dictionary['checkout'])
-        sock.send(config.Dictionary['eof'])
+        sock.send(config.Dictionary['checkout'].encode())
+        sock.send(config.Dictionary['eof'].encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             return True
@@ -62,8 +73,14 @@ class Customer():
 def customer(sock):
     os.system('cls')
     sock.send("customer".encode())
+
     temp = Customer()
-    temp.table = sock.recv(1024).decode()
+    flag = sock.recv(1024).decode()
+    if flag == config.Dictionary['no']:
+        print("No seat or no employee, Please wait...")
+        temp.table = int(sock.recv(1024).decode())
+    else:
+        temp.table = int(flag)
 
     print('Welcome to use the client(input help for help)')
     while True:
@@ -71,6 +88,7 @@ def customer(sock):
         if operation == 'order':
             if temp.Order(sock):
                 print("Order successfully !")
+                temp.wait(sock)
                 # temp.Eat()
             else:
                 print("Failed")

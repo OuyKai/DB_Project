@@ -35,7 +35,7 @@ class Employee():
 
     def Login(self, sock, username, password):
         sock.send(config.Dictionary['login'].encode())
-        sock.send((username + ' ' + password).encode())
+        sock.send((username + ' ' + password + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             print("Login successfully !")
@@ -62,7 +62,7 @@ class Employee():
     def Fire(self, sock):
         username = input("Please input the username you want to fire >>> ")
         sock.send(config.Dictionary['sign_up'].encode())
-        sock.send(username.encode())
+        sock.send((username + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             print("Fire successfully !")
@@ -124,7 +124,8 @@ def boss(sock):
             print("username or password error, please input again")
 
 def cooker_work(sock, cooker):
-    sock.send(config.Dictionary['working'])
+    sock.send(config.Dictionary['working'].encode())
+    sock.send(config.Dictionary['eof'].encode())
     while True:
         command = get_command(sock)
         para = get_para(sock)
@@ -168,6 +169,8 @@ def cooker(sock):
             print("username or password error, please input again")
 
 def waiter_work(sock, waiter):
+    sock.send(config.Dictionary['working'].encode())
+    sock.send(config.Dictionary['eof'].encode())
     while True:
         command = get_command(sock)
         para = get_para(sock)
