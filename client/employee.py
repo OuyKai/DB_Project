@@ -176,7 +176,6 @@ def waiter_work(sock, waiter):
         para = get_para(sock)
         if command == config.Dictionary['serve']:
             waiter.serve(para)
-            sock.send(config.Dictionary['yes'].encode())
         else:
             print("error command: " + command)
 

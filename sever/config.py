@@ -20,7 +20,7 @@ Dictionary = {
     'quit': '1111', # 退出
 }
 
-ip_address = '127.0.0.1'
+ip_address = '172.18.34.38'
 ip_port = 10086
 db_port = 3306
 db_name = 'MY_RESTAURANT'

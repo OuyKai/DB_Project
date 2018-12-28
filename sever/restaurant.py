@@ -97,7 +97,7 @@ class Restaurant():
                 sock.send(config.Dictionary['cook'].encode())
                 table = config.cook_food_list[0][0]
                 food = config.cook_food_list[0][1]
-                sock.send(food.encode())
+                sock.send((food + config.Dictionary['eof']).encode())
                 config.cook_food_list = config.cook_food_list[1:]
                 config.mutex.release()
 
@@ -125,7 +125,7 @@ class Restaurant():
                 sock.send(config.Dictionary['serve'].encode())
                 table = config.serve_dish_list[0][0]
                 food = config.serve_dish_list[0][1]
-                sock.send(food.encode())
+                sock.send((food + config.Dictionary['eof']).encode())
                 config.serve_dish_list = config.serve_dish_list[1:]
                 config.mutex.release()
                 flag = sock.recv(1024).decode()
