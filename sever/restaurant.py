@@ -59,7 +59,7 @@ class Restaurant():
         self.cost = len(para)
         config.mutex.acquire()
         for food in para[1:]:
-            config.cook_food_list.append((para[0], food))
+            config.cook_food_list.append((para[0], str(food)))
         config.mutex.release()
         sock.send(config.Dictionary['yes'].encode())
         sock.send(str(self.cost).encode())
