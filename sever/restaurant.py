@@ -27,11 +27,11 @@ class Restaurant():
             )
             self.cur = con.cursor()
             self.name = username
+            self.start_time = time.time()
+            sock.send(config.Dictionary['yes'].encode())
         except pymysql.Error as e:
             sock.send(config.Dictionary['no'].encode())
             print("Error %d: %s"%(e.args[0],e.args[1]))
-        self.start_time = time.time()
-        sock.send(config.Dictionary['yes'].encode())
         return
 
     def Employ(self, sock, para):
@@ -59,25 +59,26 @@ class Restaurant():
         self.cost = len(para)
         config.mutex.acquire()
         for food in para[1:]:
-            config.cook_food_list.append((para[0], str(food)))
+            config.cook_food_list.append((int(para[0]), str(food)))
         config.mutex.release()
         sock.send(config.Dictionary['yes'].encode())
         sock.send(str(self.cost).encode())
         print("Order successfully ! ")
         return
 
-    def wait(self, sock):
+    def Wait(self, sock):
         while True:
-            flag = sock.recv(1024).decode()
-            if flag == config.Dictionary['yes']:
-                print(str(self.number_of_table) + " 号桌已完成")
-                return
             time.sleep(1)
             config.mutex.acquire()
             if len(config.finish_food[self.number_of_table]) != 0:
                 food = config.finish_food[self.number_of_table][0]
                 sock.send(food.encode())
                 del config.finish_food[self.number_of_table][0]
+                flag = sock.recv(1024).decode()
+                if flag == config.Dictionary['yes']:
+                    print(str(self.number_of_table) + " 号桌已完成")
+                    config.mutex.release()
+                    return
             config.mutex.release()
 
     def Checkout(self, sock):
@@ -130,8 +131,9 @@ class Restaurant():
                 config.mutex.release()
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
-                    print(food + " have been served by " + self.name)
+                    print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 上菜 *-")
                     config.mutex.acquire()
+                    print(str(table) + " " + str(food))
                     config.finish_food[table].append(food)
                     config.mutex.release()
                     continue

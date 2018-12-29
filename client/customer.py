@@ -37,16 +37,18 @@ class Customer():
             return True
         return False
 
-    def wait(self, sock):
+    def Wait(self, sock):
         sock.send(config.Dictionary['wait'].encode())
         sock.send(config.Dictionary['eof'].encode())
-        while len(self.food) != len(self.order):
-            sock.send(config.Dictionary['no'].encode())
+        while True:
             food = sock.recv(1024).decode()
             print(food + " 已完成，请慢用")
             self.food.append(food)
-        sock.send(config.Dictionary['yes'].encode())
-        return
+            if len(self.food) != len(self.order):
+                sock.send(config.Dictionary['no'].encode())
+            else:
+                sock.send(config.Dictionary['yes'].encode())
+                return
 
     def Eat(self):
         '''
@@ -88,7 +90,7 @@ def customer(sock):
         if operation == 'order':
             if temp.Order(sock):
                 print("Order successfully !")
-                temp.wait(sock)
+                temp.Wait(sock)
                 # temp.Eat()
             else:
                 print("Failed")

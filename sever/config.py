@@ -8,12 +8,13 @@ Dictionary = {
     'checkout': '0010', # 结账
     'employ': '0011',
     'cook': '0100',
-    'payoff': '0101', # 发工资
+    'serve': '0101', # 发工资
     'sign_up': '0110', # 注册
     'login': '0111', # 登录
     'fire': '1000', # 解雇
     'working': '1001', # 工作
     'wait': '1010',
+    'payoff': '1011',
     'eof': '1100',
     'yes': '1101',
     'no': '1110',

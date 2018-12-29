@@ -12,8 +12,8 @@ def get_command(sock):
 def get_para(sock):
     msg = ''
     while True:
-        data = sock.recv(1024)
-        if data[-4:].decode() == config.Dictionary['eof']:
+        data = sock.recv(1024).decode()
+        if data[-4:] == config.Dictionary['eof']:
             msg += data[:-4]
             break
         else:
@@ -30,7 +30,7 @@ class Job(Enum):
 class Employee():
     def __init__(self, job):
         self.job = job
-        self.time = random.randint(1, 20)
+        self.time = random.randint(1, 10)
         return
 
     def Login(self, sock, username, password):
@@ -77,6 +77,7 @@ class Employee():
 
         :return:
         '''
+        print(para[0] + " 正在烹饪")
         time.sleep(self.time)
         print("cook finish")
         print(para)
@@ -84,9 +85,9 @@ class Employee():
         return
 
     def Serve(self, sock, para):
+        print(para[0] + " 正在上菜")
         time.sleep(self.time)
         print("sever dish")
-        print(para)
         sock.send(config.Dictionary['yes'].encode())
         return
 
@@ -130,7 +131,7 @@ def cooker_work(sock, cooker):
         command = get_command(sock)
         para = get_para(sock)
         if command == config.Dictionary['cook']:
-            cooker.Cook(para)
+            cooker.Cook(sock, para)
         else:
             print("error command: " + command)
 
@@ -175,7 +176,7 @@ def waiter_work(sock, waiter):
         command = get_command(sock)
         para = get_para(sock)
         if command == config.Dictionary['serve']:
-            waiter.serve(para)
+            waiter.Serve(sock, para)
         else:
             print("error command: " + command)
 
