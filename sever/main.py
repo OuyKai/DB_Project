@@ -2,7 +2,7 @@ import socket
 import _thread
 import config
 import pymysql
-from manager import manager, update
+from manager import manager
 
 def Update():
     con = pymysql.connect(
@@ -14,6 +14,7 @@ def Update():
     )
     cur = con.cursor()
     menu = cur.callproc(config.menu, ())
+    print(menu)
     config.food_menu = menu.copy()
 
 

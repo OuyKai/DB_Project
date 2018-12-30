@@ -19,6 +19,10 @@ class Customer():
 
         :return:
         '''
+        len_of_menu = len(config.food_menu)
+        for i in range(len_of_menu):
+            print(str(i + 1) + " -*- " + config.food_menu[i][0] + " " + config.food_menu[i][1])
+
         order = []
         food_name = input("Please input food name(input over to stop) >>> ")
         while food_name != "over":
@@ -81,7 +85,7 @@ def customer(sock):
     len_of_food_menu = int(sock.recv(1024).decode())
     for i in range(len_of_food_menu):
         food = sock.recv(1024).decode()
-        config.food_menu.append(food)
+        config.food_menu.append(food.strip().split())
 
     temp = Customer()
     flag = sock.recv(1024).decode()

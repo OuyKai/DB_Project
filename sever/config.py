@@ -25,7 +25,7 @@ ip_address = '172.18.34.38'
 ip_port = 10086
 db_port = 3306
 db_name = 'MY_RESTAURANT'
-root_name = 'root'
+root_name = 'guest'
 root_password = '123456'
 
 listen_limit = 10
