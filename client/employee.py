@@ -73,7 +73,10 @@ class Employee():
     def Show(self, sock):
         sock.send(config.Dictionary['show'].encode())
         sock.send(config.Dictionary['eof'].encode())
-
+        len_of_record_list = sock.recv(1024).decode()
+        for i in range(len_of_record_list):
+            record = sock.recv(1024).decode()
+            print(record)
 
     def Cook(self, sock, para):
         '''

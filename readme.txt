@@ -9,10 +9,14 @@ create procedure order_food(IN my_order_id int, IN my_food_name char(16),OUT my_
 
 create procedure check_order_state(IN my_order_id int, OUT is_finished bool)
 
-create procedure record_worker(IN this_food_names varchar(16),IN this_table_id int, IN this_worker_name varchar(16))
+create procedure record_worker(IN this_food_names varchar(16),IN this_order_id int, IN this_worker_name varchar(16))
 
 create procedure change_order_state(IN my_order_id int)
 
 create procedure dismiss_worker(IN this_worker_name varchar(16),OUT is_available bool)
 
+create procedure gain_money(IN this_order_id int, IN this_table_id int, IN this_money int)
+
 create procedure show_menu()
+
+create procedure show_record()

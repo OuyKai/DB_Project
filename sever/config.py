@@ -43,6 +43,7 @@ record = "record_worker"
 show = "show_record"
 menu = "show_menu"
 food = "change_food_state"
+checkout = "gain_money"
 
 cook_food_list = []
 serve_dish_list = []

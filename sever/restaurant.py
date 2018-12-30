@@ -8,6 +8,7 @@ class Restaurant():
         self.name = ""
         self.start_time = 0
         self.number_of_table = -1
+        self.number_of_order = -1
         self.order_list = []
         self.cost = 0
         self.cook_list = []
@@ -35,9 +36,11 @@ class Restaurant():
         return
 
     def Enter(self):
-        flag = False
-        self.cur.callproc(config.enter, (self.number_of_table, flag))
-        return flag
+        self.cur.callproc(config.enter, (self.number_of_table, self.number_of_order))
+        if self.number_of_table == -1:
+            return False
+        else:
+            return True
 
     def Employ(self, sock, para):
         username = para[0]
@@ -55,7 +58,11 @@ class Restaurant():
         return
 
     def Show(self, sock):
-        self.cur.callproc(config.show, ())
+        record_list = self.cur.callproc(config.show, ())
+        len_of_record_list = len(record_list)
+        sock.send(str(len_of_record_list).encode())
+        for record in record_list:
+            sock.send(record.encode())
         return
 
     def Order(self, sock, para):
@@ -66,15 +73,15 @@ class Restaurant():
         :return:
         '''
         money = 0
-        for food in para[1:]:
-            self.cur.callproc(config.order, (self.number_of_table, food, money))
+        for food in para:
+            self.cur.callproc(config.order, (self.number_of_order, food, money))
             if money == -1:
                 sock.send(config.Dictionary['no'].encode())
                 return
             self.cost += money
         config.mutex.acquire()
-        for food in para[1:]:
-            config.cook_food_list.append((int(para[0]), str(food)))
+        for food in para:
+            config.cook_food_list.append((self.number_of_table, food, self.number_of_order))
         config.mutex.release()
         sock.send(config.Dictionary['yes'].encode())
         sock.send(str(self.cost).encode())
@@ -92,9 +99,9 @@ class Restaurant():
                 del config.finish_food[self.number_of_table][0]
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
-                    self.cur.callproc(config.change, (self.number_of_table))
+                    self.cur.callproc(config.change, (self.number_of_order))
                     config.mutex.release()
-                    print(str(self.number_of_table) + " 号桌已完成")
+                    print(str(self.number_of_table) + " 号桌已完成," + str(self.number_of_order) + " 号订单完成")
                     return
             config.mutex.release()
 
@@ -104,6 +111,7 @@ class Restaurant():
         :param sock:
         :return:
         '''
+        self.cur.callproc(config.checkout, (self.number_of_table, self.number_of_order, self.cost))
         print(str(self.number_of_table) + " 号桌已结账 >> " + str(self.cost) + " 元")
         sock.send(config.Dictionary['yes'].encode())
         return
@@ -115,6 +123,7 @@ class Restaurant():
                 sock.send(config.Dictionary['cook'].encode())
                 table = config.cook_food_list[0][0]
                 food = config.cook_food_list[0][1]
+                order = config.cook_food_list[0][2]
                 sock.send((food + config.Dictionary['eof']).encode())
                 config.cook_food_list = config.cook_food_list[1:]
                 config.mutex.release()
@@ -122,14 +131,14 @@ class Restaurant():
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
                     config.mutex.acquire()
-                    self.cur.callproc(config.record, (food, table, self.name))
+                    self.cur.callproc(config.record, (food, order, self.name))
                     print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 完成 *-")
-                    config.serve_dish_list.append((table, food))
+                    config.serve_dish_list.append((table, food, order))
                     config.mutex.release()
                     continue
                 else:
                     config.mutex.acquire()
-                    config.cook_food_list.append((table, food))
+                    config.cook_food_list.append((table, food, order))
                     config.mutex.release()
                     print("-* Cooker down ! Error ! *-")
             else:
@@ -144,20 +153,21 @@ class Restaurant():
                 sock.send(config.Dictionary['serve'].encode())
                 table = config.serve_dish_list[0][0]
                 food = config.serve_dish_list[0][1]
+                order = config.cook_food_list[0][2]
                 sock.send((food + config.Dictionary['eof']).encode())
                 config.serve_dish_list = config.serve_dish_list[1:]
                 config.mutex.release()
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
                     config.mutex.acquire()
-                    self.cur.callproc(config.record, (food, table, self.name))
+                    self.cur.callproc(config.record, (food, order, self.name))
                     print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 上菜 *-")
                     config.finish_food[table].append(food)
                     config.mutex.release()
                     continue
                 else:
                     config.mutex.acquire()
-                    config.serve_dish_list.append((table, food))
+                    config.serve_dish_list.append((table, food, order))
                     config.mutex.release()
                     print("Waiter down ! Error !")
             else:
