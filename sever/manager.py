@@ -61,7 +61,7 @@ def manager(sock, address):
         len_of_food_menu = len(config.food_menu)
         sock.send(str(len_of_food_menu).encode())
         for food in config.food_menu:
-            sock.send(food.encode())
+            sock.send(str(food).encode())
 
         if 0 not in config.table or len(config.waiter_list) == 0 or len(config.cooker_list) == 0:
             print("No seat or no employee, Please wait")

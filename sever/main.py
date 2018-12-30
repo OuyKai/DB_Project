@@ -13,9 +13,22 @@ def Update():
         db=config.db_name
     )
     cur = con.cursor()
-    menu = cur.callproc(config.menu, ())
-    print(menu)
-    config.food_menu = menu.copy()
+    cur.execute("select * from menu")
+    menu = cur.fetchall()
+    for food in menu:
+        config.food_menu.append(list(food))
+        print(config.food_menu)
+
+    con = pymysql.connect(
+        host=config.ip_address,
+        port=config.db_port,
+        user=config.customer_name,
+        password=config.customer_password,
+        db=config.db_name
+    )
+    config.mutex.acquire()
+    config.customer_cur = con.cursor()
+    config.mutex.release()
 
 
 if __name__ == "__main__":
@@ -25,11 +38,11 @@ if __name__ == "__main__":
     print('======================start=======================')
     print('                  服务器正在运行...')
     print('=======================end========================')
+
+    Update()
     while True:
-        Update()
         sock, address = s.accept()
         try:
             _thread.start_new_thread(manager, (sock, address))
-            _thread.start_new_thread(update, ())
         except:
             print('连接异常终止: source: %s' % address + ' --- destination: %s' % config.ip_address)

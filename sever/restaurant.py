@@ -36,7 +36,9 @@ class Restaurant():
         return
 
     def Enter(self):
-        self.cur.callproc(config.enter, (self.number_of_table, self.number_of_order))
+        config.mutex.acquire()
+        config.customer_cur.callproc(config.enter, (self.number_of_table, self.number_of_order))
+        config.mutex.release()
         if self.number_of_table == -1:
             return False
         else:

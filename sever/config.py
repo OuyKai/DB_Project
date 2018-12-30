@@ -27,6 +27,8 @@ db_port = 3306
 db_name = 'MY_RESTAURANT'
 root_name = 'guest'
 root_password = '123456'
+customer_name = 'test_3'
+customer_password = '123456'
 
 listen_limit = 10
 table = [0] * listen_limit
@@ -40,8 +42,6 @@ order = "order_food"
 change = "change_order_state"
 fire = "dismiss_worker"
 record = "record_worker"
-show = "show_record"
-menu = "show_menu"
 food = "change_food_state"
 checkout = "gain_money"
 set_state = "set_worker_state"
@@ -54,3 +54,4 @@ waiter_list = []
 cooker_list = []
 
 food_menu = []
+customer_cur = ""

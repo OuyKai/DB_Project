@@ -19,7 +19,3 @@ create procedure gain_money(IN this_order_id int, IN this_table_id int, IN this_
 
 create procedure set_worker_state(IN this_worker_name varchar(16), IN his_state bool, IN this_table_id int, IN this_order_id int)
 #state:true为设为忙，如果是厨师，food_id应>=0,否则NULL,服务员同理
-
-create procedure show_menu()
-
-create procedure show_record()
