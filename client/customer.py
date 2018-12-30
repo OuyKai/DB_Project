@@ -24,7 +24,7 @@ class Customer():
         while food_name != "over":
             order.append(food_name)
             food_name = input("Please input food name >>> ")
-        menu = str(self.table) + " "
+        menu = ""
         for food in order:
             menu += (food + " ")
         sock.send(config.Dictionary['order'].encode())
@@ -34,6 +34,8 @@ class Customer():
             self.cost = sock.recv(1024).decode()
             for food in order:
                 self.order.append(food)
+            print(str(self.table) + " 完成点餐，点餐如下 >> "
+                  + menu + " 共计 " + str(self.cost) + " 元")
             return True
         return False
 

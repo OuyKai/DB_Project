@@ -33,6 +33,11 @@ waiter_salary = []
 cooker_salary = []
 
 sign_up = "sign_up"
+enter = "enter_restaurant"
+order = "order_food"
+change = "change_order_state"
+fire = "dismiss_worker"
+record = "record_worker"
 
 cook_food_list = []
 serve_dish_list = []

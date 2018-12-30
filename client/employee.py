@@ -48,8 +48,9 @@ class Employee():
     def Employ(self, sock):
         username = input("Please input username >>> ")
         password = input("Please input password >>> ")
+        role = input("Please input his role >>> ")
         sock.send(config.Dictionary['sign_up'].encode())
-        sock.send((username + ' ' + password + config.Dictionary['eof']).encode())
+        sock.send((username + ' ' + password + ' ' + role + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
             print("Employ successfully !")
@@ -110,8 +111,8 @@ def boss(sock):
             print('Welcome to use the client(input help for help)')
             while True:
                 operation = input("Please input what you want >>> ")
-                if operation == 'payoff':
-                    temp.Payoff(sock)
+                if operation == 'fire':
+                    temp.Fire(sock)
                 elif operation == 'employ':
                     temp.Employ(sock)
                 elif operation == 'help':

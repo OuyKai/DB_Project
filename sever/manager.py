@@ -34,8 +34,8 @@ def manager_work(sock, temp):
             temp.Wait(sock)
         elif command == config.Dictionary['checkout']:
             temp.Checkout(sock)
-        elif command == config.Dictionary['payoff']:
-            temp.Payoff(sock, para)
+        elif command == config.Dictionary['fire']:
+            temp.Fire(sock, para)
         elif command == config.Dictionary['working']:
             if temp.role == "cooker":
                 config.mutex.acquire()
@@ -62,11 +62,11 @@ def manager(sock, address):
         while True:         # 等到有桌子有人的时候才让他进来
             time.sleep(1)
             if 0 in config.table and len(config.cooker_list) != 0 and len(config.waiter_list) != 0:
-                break
+                if temp.Enter():
+                    break
 
         temp.role = "customer"
         temp.start_time = time.time()
-        temp.number_of_table = config.table.index(0)
 
         config.mutex.acquire()
         config.table[temp.number_of_table] = 1

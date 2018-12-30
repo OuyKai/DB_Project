@@ -34,12 +34,18 @@ class Restaurant():
             print("Error %d: %s"%(e.args[0],e.args[1]))
         return
 
+    def Enter(self):
+        flag = False
+        self.cur.callproc(config.enter, (self.number_of_table, flag))
+        return flag
+
     def Employ(self, sock, para):
         username = para[0]
         password = para[1]
+        role = para[2]
         flag = False
         try:
-            self.cur.callproc(config.sign_up, (username, password, flag))
+            self.cur.callproc(config.sign_up, (username, password, role, flag))
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
         if flag == True:
@@ -55,15 +61,21 @@ class Restaurant():
         :param para:
         :return:
         '''
-        print(str(para[0]) + " : " + str(para[1:]))
-        self.cost = len(para)
+        money = 0
+        for food in para[1:]:
+            self.cur.callproc(config.order, (self.number_of_table, food, money))
+            if money == -1:
+                sock.send(config.Dictionary['no'].encode())
+                return
+            self.cost += money
         config.mutex.acquire()
         for food in para[1:]:
             config.cook_food_list.append((int(para[0]), str(food)))
         config.mutex.release()
         sock.send(config.Dictionary['yes'].encode())
         sock.send(str(self.cost).encode())
-        print("Order successfully ! ")
+        print(str(self.number_of_table) + " 完成点餐，点餐如下 >> "
+              + str(para) + " 共计 " + str(self.cost) + " 元")
         return
 
     def Wait(self, sock):
@@ -76,8 +88,9 @@ class Restaurant():
                 del config.finish_food[self.number_of_table][0]
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
-                    print(str(self.number_of_table) + " 号桌已完成")
+                    self.cur.callproc(config.change, (self.number_of_table))
                     config.mutex.release()
+                    print(str(self.number_of_table) + " 号桌已完成")
                     return
             config.mutex.release()
 
@@ -105,6 +118,7 @@ class Restaurant():
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
                     config.mutex.acquire()
+                    self.cur.callproc(config.record, (food, table, self.name))
                     print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 完成 *-")
                     config.serve_dish_list.append((table, food))
                     config.mutex.release()
@@ -131,9 +145,9 @@ class Restaurant():
                 config.mutex.release()
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
-                    print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 上菜 *-")
                     config.mutex.acquire()
-                    print(str(table) + " " + str(food))
+                    self.cur.callproc(config.record, (food, table, self.name))
+                    print("-* " + str(table) + " 号桌 : " + food + " 已被 " + self.name + " 上菜 *-")
                     config.finish_food[table].append(food)
                     config.mutex.release()
                     continue
@@ -147,13 +161,16 @@ class Restaurant():
             time.sleep(1)
         return
 
-    def Unemploy(self, sock, para):
+    def Fire(self, sock, para):
         username = para
+        self.cur.callproc(config.fire, (username))
         print(username + " 已解雇")
         sock.send(config.Dictionary['yes'].encode())
+        config.mutex.acquire()
+        for cooker in config.cooker_list:
+            if cooker.name == username:
+                config.cooker_list.remove(cooker)
+                break
+        config.mutex.release()
         return
 
-    def Payoff(self, sock):
-
-        sock.send(config.Dictionary['yes'].encode())
-        return
