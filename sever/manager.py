@@ -36,6 +36,8 @@ def manager_work(sock, temp):
             temp.Checkout(sock)
         elif command == config.Dictionary['fire']:
             temp.Fire(sock, para)
+        elif command == config.Dictionary['show']:
+            temp.Show(sock)
         elif command == config.Dictionary['working']:
             if temp.role == "cooker":
                 config.mutex.acquire()
@@ -56,6 +58,11 @@ def manager(sock, address):
     print('连接建立: source address %s:%s' % address)
     role = sock.recv(1024).decode()
     if role == "customer":
+        len_of_food_menu = len(config.food_menu)
+        sock.send(str(len_of_food_menu).encode())
+        for food in config.food_menu:
+            sock.send(food.encode())
+
         if 0 not in config.table or len(config.waiter_list) == 0 or len(config.cooker_list) == 0:
             print("No seat or no employee, Please wait")
             sock.send(config.Dictionary['no'].encode())

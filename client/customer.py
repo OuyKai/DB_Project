@@ -78,6 +78,11 @@ def customer(sock):
     os.system('cls')
     sock.send("customer".encode())
 
+    len_of_food_menu = int(sock.recv(1024).decode())
+    for i in range(len_of_food_menu):
+        food = sock.recv(1024).decode()
+        config.food_menu.append(food)
+
     temp = Customer()
     flag = sock.recv(1024).decode()
     if flag == config.Dictionary['no']:

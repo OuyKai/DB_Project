@@ -14,7 +14,7 @@ Dictionary = {
     'fire': '1000', # 解雇
     'working': '1001', # 工作
     'wait': '1010',
-    'payoff': '1011',
+    'show': '1011',
     'eof': '1100',
     'yes': '1101',
     'no': '1110',
@@ -25,6 +25,8 @@ ip_address = '172.18.34.38'
 ip_port = 10086
 db_port = 3306
 db_name = 'MY_RESTAURANT'
+root_name = 'root'
+root_password = '123456'
 
 listen_limit = 10
 table = [0] * listen_limit
@@ -38,6 +40,9 @@ order = "order_food"
 change = "change_order_state"
 fire = "dismiss_worker"
 record = "record_worker"
+show = "show_record"
+menu = "show_menu"
+food = "change_food_state"
 
 cook_food_list = []
 serve_dish_list = []
@@ -45,3 +50,5 @@ finish_food = [[]] * listen_limit
 
 waiter_list = []
 cooker_list = []
+
+food_menu = []

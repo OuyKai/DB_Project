@@ -10,7 +10,7 @@ Dictionary = {
     'fire': '1000', # 解雇
     'working': '1001', # 工作
     'wait': '1010',
-    'payoff': '1011',
+    'show': '1011',
     'eof': '1100',
     'yes': '1101',
     'no': '1110',
@@ -19,3 +19,5 @@ Dictionary = {
 
 ip_address = '172.18.34.38'
 ip_port = 10086
+
+food_menu = []

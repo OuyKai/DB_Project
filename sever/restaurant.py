@@ -54,6 +54,10 @@ class Restaurant():
             sock.send(config.Dictionary['no'].encode())
         return
 
+    def Show(self, sock):
+        self.cur.callproc(config.show, ())
+        return
+
     def Order(self, sock, para):
         '''
         调用order函数

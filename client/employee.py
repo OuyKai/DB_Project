@@ -44,7 +44,6 @@ class Employee():
             print("Login failed !")
             return False
 
-
     def Employ(self, sock):
         username = input("Please input username >>> ")
         password = input("Please input password >>> ")
@@ -59,7 +58,6 @@ class Employee():
             print("Employ failed !")
             return False
 
-
     def Fire(self, sock):
         username = input("Please input the username you want to fire >>> ")
         sock.send(config.Dictionary['sign_up'].encode())
@@ -71,6 +69,11 @@ class Employee():
         else:
             print("Fire failed !")
             return False
+
+    def Show(self, sock):
+        sock.send(config.Dictionary['show'].encode())
+        sock.send(config.Dictionary['eof'].encode())
+
 
     def Cook(self, sock, para):
         '''
@@ -115,8 +118,12 @@ def boss(sock):
                     temp.Fire(sock)
                 elif operation == 'employ':
                     temp.Employ(sock)
+                elif operation == 'show':
+                    temp.Show(sock)
                 elif operation == 'help':
-                    print('payoff: check account of restaurant.')
+                    print('fire: fire worker.')
+                    print('employ: employ worker.')
+                    print('show: show all record.')
                     print('back: back to last window.')
                 elif operation == 'back':
                     return
