@@ -125,9 +125,11 @@ class Restaurant():
                 food = config.cook_food_list[0][1]
                 order = config.cook_food_list[0][2]
                 sock.send((food + config.Dictionary['eof']).encode())
+                self.cur.callproc(config.set_state, (self.name, True, -1, order))
                 config.cook_food_list = config.cook_food_list[1:]
                 config.mutex.release()
 
+                self.cur.callproc(config.set_state, (self.name, False, -1, order))
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
                     config.mutex.acquire()
@@ -155,8 +157,11 @@ class Restaurant():
                 food = config.serve_dish_list[0][1]
                 order = config.cook_food_list[0][2]
                 sock.send((food + config.Dictionary['eof']).encode())
+                self.cur.callproc(config.set_state, (self.name, True, table, -1))
                 config.serve_dish_list = config.serve_dish_list[1:]
                 config.mutex.release()
+
+                self.cur.callproc(config.set_state, (self.name, False, table, -1))
                 flag = sock.recv(1024).decode()
                 if flag == config.Dictionary['yes']:
                     config.mutex.acquire()

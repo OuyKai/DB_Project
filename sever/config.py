@@ -44,6 +44,7 @@ show = "show_record"
 menu = "show_menu"
 food = "change_food_state"
 checkout = "gain_money"
+set_state = "set_worker_state"
 
 cook_food_list = []
 serve_dish_list = []
