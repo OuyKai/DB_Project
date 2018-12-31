@@ -27,7 +27,7 @@ db_port = 3306
 db_name = 'MY_RESTAURANT'
 root_name = 'guest'
 root_password = '123456'
-customer_name = 'cust'
+customer_name = 'cost'
 customer_password = '123456'
 
 listen_limit = 10
