@@ -9,6 +9,6 @@ con = pymysql.connect(
     db=config.db_name
 )
 customer_cur = con.cursor()
-number_of_table, number_of_order = 0, 0
+number_of_table, number_of_order = -1, -1
 customer_cur.callproc(config.enter, (number_of_table, number_of_order))
 print(number_of_order, number_of_table)

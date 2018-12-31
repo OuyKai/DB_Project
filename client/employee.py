@@ -48,7 +48,7 @@ class Employee():
         username = input("Please input username >>> ")
         password = input("Please input password >>> ")
         role = input("Please input his role >>> ")
-        sock.send(config.Dictionary['sign_up'].encode())
+        sock.send(config.Dictionary['employ'].encode())
         sock.send((username + ' ' + password + ' ' + role + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:
@@ -60,7 +60,7 @@ class Employee():
 
     def Fire(self, sock):
         username = input("Please input the username you want to fire >>> ")
-        sock.send(config.Dictionary['sign_up'].encode())
+        sock.send(config.Dictionary['fire'].encode())
         sock.send((username + config.Dictionary['eof']).encode())
         flag = sock.recv(1024).decode()
         if flag == config.Dictionary['yes']:

@@ -71,7 +71,7 @@ def manager(sock, address):
             time.sleep(1)
             if 0 in config.table and len(config.cooker_list) != 0 and len(config.waiter_list) != 0:
                 print("test")
-                if temp.Enter():
+                if temp.Enter() == True:
                     break
 
         temp.role = "customer"

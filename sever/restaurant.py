@@ -7,8 +7,8 @@ class Restaurant():
         self.role = ""
         self.name = ""
         self.start_time = 0
-        self.number_of_table = -1
-        self.number_of_order = -1
+        self.number_of_table = 1
+        self.number_of_order = 1
         self.order_list = []
         self.cost = 0
         self.cook_list = []
@@ -48,6 +48,7 @@ class Restaurant():
         customer_cur.callproc(config.enter, (self.number_of_table, self.number_of_order))
         config.mutex.release()
 
+        print(self.number_of_table, self.number_of_order)
         if self.number_of_table == -1:
             return False
         else:
