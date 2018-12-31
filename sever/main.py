@@ -19,17 +19,6 @@ def Update():
         config.food_menu.append(list(food))
         print(config.food_menu)
 
-    con = pymysql.connect(
-        host=config.ip_address,
-        port=config.db_port,
-        user=config.customer_name,
-        password=config.customer_password,
-        db=config.db_name
-    )
-    config.mutex.acquire()
-    config.customer_cur = con.cursor()
-    config.mutex.release()
-
 
 if __name__ == "__main__":
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

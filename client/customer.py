@@ -85,7 +85,8 @@ def customer(sock):
     len_of_food_menu = int(sock.recv(1024).decode())
     for i in range(len_of_food_menu):
         food = sock.recv(1024).decode()
-        config.food_menu.append(food.strip().split())
+        sock.send(config.Dictionary['yes'].encode())
+        config.food_menu.append(food)
 
     temp = Customer()
     flag = sock.recv(1024).decode()
