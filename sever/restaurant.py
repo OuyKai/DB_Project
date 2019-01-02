@@ -52,7 +52,7 @@ class Restaurant():
 
         self.number_of_table = temp[0]
         self.number_of_order = temp[1]
-        print(self.number_of_table, self.number_of_order)
+        print("餐桌号："+ str(self.number_of_table) + str(self.number_of_order))
         if self.number_of_table == -1:
             return False
         else:
@@ -64,7 +64,9 @@ class Restaurant():
         role = para[2]
         flag = False
         try:
-            self.cur.callproc(config.sign_up, (username, password, role, flag))
+            self.cur.execute('call ' + config.sign_up + '(%s, %s, %s, @flag)' %username, password, role)
+            self.cur.execute('select @flag')
+            flag = self.cur.fetchone()
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
         if flag == True:
