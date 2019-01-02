@@ -17,7 +17,6 @@ def help():
 
 def main_cycle():
     os.system('cls')
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         # print(config.ip_address)

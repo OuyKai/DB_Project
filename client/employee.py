@@ -98,9 +98,6 @@ class Employee():
         sock.send(config.Dictionary['yes'].encode())
         return
 
-    def Payoff(self, sock):
-        return
-
 
 def boss(sock):
     os.system('cls')
