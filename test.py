@@ -10,7 +10,9 @@ con = pymysql.connect(
 )
 customer_cur = con.cursor()
 
-customer_cur.callproc(config.enter, (number_of_table, number_of_order))
-data = customer_cur.fetchall()
-print(data)
-print(number_of_order, number_of_table)
+customer_cur.execute('call ' + config.enter + '(@a, @b);')
+customer_cur.execute('select @a, @b;')
+temp = customer_cur.fetchaone()
+number_of_table = temp[0]
+number_of_order = temp[1]
+print(number_of_table, number_of_order)
