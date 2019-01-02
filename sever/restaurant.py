@@ -64,8 +64,8 @@ class Restaurant():
         role = para[2]
         flag = False
         try:
-            self.cur.execute('call ' + config.sign_up + '(%s, %s, %s, @flag)' %username, password, role)
-            self.cur.execute('select @flag')
+            self.cur.execute('call ' + config.sign_up + '(%s, %s, %s, @flag);' %(username, password, role))
+            self.cur.execute('select @flag;')
             flag = self.cur.fetchone()
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
@@ -92,7 +92,9 @@ class Restaurant():
         '''
         money = 0
         for food in para:
-            self.cur.callproc(config.order, (self.number_of_order, food, money))
+            self.cur.execute('call ' + config.order + '(%d, %s, @money);' % (self.number_of_order, food))
+            self.cur.execute('select @money;')
+            money = self.cur.fetchone()
             if money == -1:
                 sock.send(config.Dictionary['no'].encode())
                 return
@@ -201,13 +203,19 @@ class Restaurant():
     def Fire(self, sock, para):
         username = para
         self.cur.callproc(config.fire, (username))
-        print(username + " 已解雇")
-        sock.send(config.Dictionary['yes'].encode())
-        config.mutex.acquire()
-        for cooker in config.cooker_list:
-            if cooker.name == username:
-                config.cooker_list.remove(cooker)
-                break
-        config.mutex.release()
+        self.cur.execute('call ' + config.fire + '(%s, @flag);' %username)
+        self.cur.execute('select @flag;')
+        flag = self.cur.fetchone()
+        if flag == True:
+            print(username + " 已解雇")
+            sock.send(config.Dictionary['yes'].encode())
+            config.mutex.acquire()
+            for cooker in config.cooker_list:
+                if cooker.name == username:
+                    config.cooker_list.remove(cooker)
+                    break
+            config.mutex.release()
+        else:
+            sock.send(config.Dictionary['no'].encode())
         return
 
