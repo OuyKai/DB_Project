@@ -47,7 +47,7 @@ class Restaurant():
         customer_cur = con.cursor()
         customer_cur.execute('call ' + config.enter + '(@a, @b);')
         customer_cur.execute('select @a, @b;')
-        temp = customer_cur.fetchaone()
+        temp = customer_cur.fetchone()
         config.mutex.release()
 
         self.number_of_table = temp[0]
@@ -64,7 +64,7 @@ class Restaurant():
         role = para[2]
         flag = False
         try:
-            self.cur.execute('call ' + config.sign_up + '(%s, %s, %s, @flag);' %(username, password, role))
+            self.cur.execute('call ' + config.sign_up + '(\'%s\', \'%s\', %s\', @flag);' %(username, password, role))
             self.cur.execute('select @flag;')
             flag = self.cur.fetchone()
         except pymysql.Error as e:
@@ -90,10 +90,18 @@ class Restaurant():
         :param para:
         :return:
         '''
-        money = 0
+        config.mutex.acquire()
+        con = pymysql.connect(
+            host=config.ip_address,
+            port=config.db_port,
+            user=config.customer_name,
+            password=config.customer_password,
+            db=config.db_name
+        )
+        customer_cur = con.cursor()
         for food in para:
-            self.cur.execute('call ' + config.order + '(%d, %s, @money);' % (self.number_of_order, food))
-            self.cur.execute('select @money;')
+            customer_cur.execute('call ' + config.order + '(\'%d\', \'%s\', @money);' % (self.number_of_order, food))
+            customer_cur.execute('select @money;')
             money = self.cur.fetchone()
             if money == -1:
                 sock.send(config.Dictionary['no'].encode())
@@ -203,7 +211,7 @@ class Restaurant():
     def Fire(self, sock, para):
         username = para
         self.cur.callproc(config.fire, (username))
-        self.cur.execute('call ' + config.fire + '(%s, @flag);' %username)
+        self.cur.execute('call ' + config.fire + '(\'%s\', @flag);' %username)
         self.cur.execute('select @flag;')
         flag = self.cur.fetchone()
         if flag == True:

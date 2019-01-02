@@ -21,7 +21,7 @@ class Customer():
         '''
         len_of_menu = len(config.food_menu)
         for i in range(len_of_menu):
-            print(str(i + 1) + " -*- " + config.food_menu[i][0] + " " + config.food_menu[i][1])
+            print(str(i + 1) + " -*- " + config.food_menu[i])
 
         order = []
         food_name = input("Please input food name(input over to stop) >>> ")
