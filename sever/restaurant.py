@@ -62,17 +62,16 @@ class Restaurant():
         username = para[0]
         password = para[1]
         role = para[2]
-        flag = False
         try:
             self.cur.execute('call ' + config.sign_up + '(\'%s\', \'%s\', %s\', @flag);' %(username, password, role))
             self.cur.execute('select @flag;')
             flag = self.cur.fetchone()
+            if flag == True:
+                sock.send(config.Dictionary['yes'].encode())
+            else:
+                sock.send(config.Dictionary['no'].encode())
         except pymysql.Error as e:
             print("Error %d: %s" % (e.args[0], e.args[1]))
-        if flag == True:
-            sock.send(config.Dictionary['yes'].encode())
-        else:
-            sock.send(config.Dictionary['no'].encode())
         return
 
     def Show(self, sock):
@@ -210,20 +209,22 @@ class Restaurant():
 
     def Fire(self, sock, para):
         username = para
-        self.cur.callproc(config.fire, (username))
-        self.cur.execute('call ' + config.fire + '(\'%s\', @flag);' %username)
-        self.cur.execute('select @flag;')
-        flag = self.cur.fetchone()
-        if flag == True:
-            print(username + " 已解雇")
-            sock.send(config.Dictionary['yes'].encode())
-            config.mutex.acquire()
-            for cooker in config.cooker_list:
-                if cooker.name == username:
-                    config.cooker_list.remove(cooker)
-                    break
-            config.mutex.release()
-        else:
-            sock.send(config.Dictionary['no'].encode())
+        try:
+            self.cur.execute('call ' + config.fire + '(\'%s\', @flag);' %username)
+            self.cur.execute('select @flag;')
+            flag = self.cur.fetchone()
+            if flag == True:
+                print(username + " 已解雇")
+                sock.send(config.Dictionary['yes'].encode())
+                config.mutex.acquire()
+                for cooker in config.cooker_list:
+                    if cooker.name == username:
+                        config.cooker_list.remove(cooker)
+                        break
+                config.mutex.release()
+            else:
+                sock.send(config.Dictionary['no'].encode())
+        except pymysql.Error as e:
+            print("Error %d: %s" % (e.args[0], e.args[1]))
         return
 
